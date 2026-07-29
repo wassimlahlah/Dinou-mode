@@ -1,69 +1,43 @@
 import { useState } from "react";
 import { useShop } from "../context/ShopContext";
 import { motion } from "framer-motion";
-import { FaCheck, FaTruck, FaShieldAlt, FaCreditCard } from "react-icons/fa";
+import { FaCheck, FaTruck, FaShieldAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const WILAYAS = [
-  "Adrar",                 // 01
-  "Chlef",                 // 02
-  "Laghouat",              // 03
-  "Oum El Bouaghi",        // 04
-  "Batna",                 // 05
-  "Bejaia",                // 06
-  "Biskra",                // 07
-  "Bechar",                // 08
-  "Blida",                 // 09
-  "Bouira",                // 10
-  "Tamanrasset",           // 11
-  "Tebessa",               // 12
-  "Tlemcen",               // 13
-  "Tiaret",                // 14
-  "Tizi Ouzou",            // 15
-  "Algiers",               // 16
-  "Djelfa",                // 17
-  "Jijel",                 // 18
-  "Setif",                 // 19
-  "Saida",                 // 20
-  "Skikda",                // 21
-  "Sidi Bel Abbes",        // 22
-  "Annaba",                // 23
-  "Guelma",                // 24
-  "Constantine",           // 25
-  "Medea",                 // 26
-  "Mostaganem",            // 27
-  "M'Sila",                // 28
-  "Mascara",               // 29
-  "Ouargla",               // 30
-  "Oran",                  // 31
-  "El Bayadh",             // 32
-  "Illizi",                // 33
-  "Bordj Bou Arreridj",    // 34
-  "Boumerdes",             // 35
-  "El Tarf",               // 36
-  "Tindouf",               // 37
-  "Tissemsilt",            // 38
-  "El Oued",               // 39
-  "Khenchela",             // 40
-  "Souk Ahras",            // 41
-  "Tipaza",                // 42
-  "Mila",                  // 43
-  "Ain Defla",             // 44
-  "Naama",                 // 45
-  "Ain Temouchent",        // 46
-  "Ghardaia",              // 47
-  "Relizane",              // 48
-  "Timimoun",              // 49
-  "Bordj Badji Mokhtar",   // 50
-  "Ouled Djellal",         // 51
-  "Beni Abbes",            // 52
-  "In Salah",              // 53
-  "In Guezzam",            // 54
-  "Touggourt",             // 55
-  "Djanet",                // 56
-  "El M'Ghair",            // 57
-  "El Meniaa"              // 58
+  "Adrar", "Chlef", "Laghouat", "Oum El Bouaghi", "Batna", "Bejaia",
+  "Biskra", "Bechar", "Blida", "Bouira", "Tamanrasset", "Tebessa",
+  "Tlemcen", "Tiaret", "Tizi Ouzou", "Algiers", "Djelfa", "Jijel",
+  "Setif", "Saida", "Skikda", "Sidi Bel Abbes", "Annaba", "Guelma",
+  "Constantine", "Medea", "Mostaganem", "M'Sila", "Mascara", "Ouargla",
+  "Oran", "El Bayadh", "Illizi", "Bordj Bou Arreridj", "Boumerdes",
+  "El Tarf", "Tindouf", "Tissemsilt", "El Oued", "Khenchela",
+  "Souk Ahras", "Tipaza", "Mila", "Ain Defla", "Naama",
+  "Ain Temouchent", "Ghardaia", "Relizane", "Timimoun",
+  "Bordj Badji Mokhtar", "Ouled Djellal", "Beni Abbes", "In Salah",
+  "In Guezzam", "Touggourt", "Djanet", "El M'Ghair", "El Meniaa"
 ];
+
+const SHIPPING_RATES = {
+  "Chlef": 400, "Oum El Bouaghi": 400, "Batna": 400, "Bejaia": 400,
+  "Biskra": 400, "Bechar": 400, "Blida": 400, "Bouira": 400,
+  "Tebessa": 400, "Tlemcen": 400, "Tizi Ouzou": 400, "Algiers": 400,
+  "Jijel": 400, "Setif": 400, "Saida": 400, "Skikda": 400,
+  "Sidi Bel Abbes": 400, "Annaba": 400, "Guelma": 400, "Constantine": 400,
+  "Medea": 400, "Mostaganem": 400, "Mascara": 400, "Oran": 400,
+  "Bordj Bou Arreridj": 400, "Boumerdes": 400, "El Tarf": 400,
+  "Souk Ahras": 400, "Tipaza": 400, "Mila": 400, "Ain Defla": 400,
+  "Ain Temouchent": 400, "Relizane": 400, "Khenchela": 400,
+  "Laghouat": 600, "Tiaret": 600, "Djelfa": 600, "Tissemsilt": 600,
+  "El Bayadh": 600, "Naama": 600, "Ouargla": 600, "Ghardaia": 600,
+  "M'Sila": 600, "El Oued": 600, "Ouled Djellal": 600, "Touggourt": 600,
+  "El M'Ghair": 600,
+  "Adrar": 1000, "Tamanrasset": 1000, "Illizi": 1000, "Timimoun": 1000,
+  "Bordj Badji Mokhtar": 1000, "Beni Abbes": 1000, "In Salah": 1000,
+  "In Guezzam": 1000, "Djanet": 1000, "El Meniaa": 1000, "Tindouf": 1000
+};
+
 export default function Checkout() {
     const { cart, cartTotal, clearCart } = useShop();
     const [formData, setFormData] = useState({
@@ -75,8 +49,8 @@ export default function Checkout() {
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const shipping = cartTotal > 10000 ? 0 : 500;
-    const finalTotal = cartTotal + shipping;
+    const delivery = formData.wilaya ? (SHIPPING_RATES[formData.wilaya] || 500) : 0;
+    const finalTotal = cartTotal + delivery;
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -84,12 +58,28 @@ export default function Checkout() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (!formData.wilaya) {
+            toast.error("Please select your wilaya");
+            return;
+        }
+
         setLoading(true);
         
-        // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1500));
         
-        console.log("Order:", { ...formData, cart, total: finalTotal });
+        const orderData = { 
+            ...formData, 
+            cart, 
+            deliveryFee: delivery,
+            total: finalTotal 
+        };
+        
+        console.log("🧾 ORDER TOTAL:", finalTotal.toLocaleString(), "DA");
+        console.log("📦 Full Order:", orderData);
+        
+        toast.success(`Order placed! Total: ${finalTotal.toLocaleString()} DA`);
+        
         setSubmitted(true);
         setLoading(false);
         clearCart();
@@ -129,10 +119,6 @@ export default function Checkout() {
                 <p className="text-gray-500 mb-8">
                     We'll contact you soon at <span className="font-semibold text-gray-800">{formData.phone}</span> to confirm your order.
                 </p>
-                <div className="bg-gray-50 rounded-2xl p-6 mb-8">
-                    <p className="text-sm text-gray-400 uppercase tracking-wider mb-2">Order Total</p>
-                    <p className="text-3xl font-bold text-pink-500">{finalTotal.toLocaleString()} DA</p>
-                </div>
                 <Link to="/shop" className="inline-block bg-black text-white px-8 py-3 rounded-full hover:bg-pink-500 transition">
                     Continue Shopping
                 </Link>
@@ -152,7 +138,6 @@ export default function Checkout() {
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
                 
-                {/* ===== LEFT : SHIPPING FORM ===== */}
                 <div className="lg:col-span-3">
                     <motion.form 
                         initial={{ opacity: 0, y: 20 }}
@@ -163,7 +148,6 @@ export default function Checkout() {
                         <h2 className="text-xl font-bold mb-6">Shipping Information</h2>
                         
                         <div className="space-y-5">
-                            {/* Full Name */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Full Name <span className="text-red-500">*</span>
@@ -179,7 +163,6 @@ export default function Checkout() {
                                 />
                             </div>
 
-                            {/* Phone + Wilaya */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -214,7 +197,6 @@ export default function Checkout() {
                                 </div>
                             </div>
 
-                            {/* Commune */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Commune
@@ -230,7 +212,6 @@ export default function Checkout() {
                             </div>
                         </div>
 
-                        {/* Submit Button */}
                         <button
                             type="submit"
                             disabled={loading}
@@ -259,7 +240,6 @@ export default function Checkout() {
                     </motion.form>
                 </div>
 
-                {/* ===== RIGHT : ORDER SUMMARY ===== */}
                 <div className="lg:col-span-2">
                     <motion.div 
                         initial={{ opacity: 0, x: 20 }}
@@ -268,7 +248,6 @@ export default function Checkout() {
                     >
                         <h2 className="text-xl font-bold mb-6 font-serif">Order Summary</h2>
                         
-                        {/* Products list */}
                         <div className="space-y-3 mb-6 max-h-60 overflow-y-auto">
                             {cart.map((item) => (
                                 <div key={`${item.id}-${item.size}-${item.color}`} className="flex justify-between text-sm">
@@ -289,11 +268,20 @@ export default function Checkout() {
                                 <span>Subtotal</span>
                                 <span>{cartTotal.toLocaleString()} DA</span>
                             </div>
-                             <div className="flex justify-between text-gray-600">
-                                <span>Dilavrie</span>
-                                <span>{dilavrie.toLocaleString()} DA</span>// i wante delver by willay 
+                            <div className="flex justify-between text-gray-600">
+                                <span>Delivery</span>
+                                <span>
+                                    {delivery === 0 
+                                        ? <span className="text-gray-400">—</span> 
+                                        : `${delivery.toLocaleString()} DA`
+                                    }
+                                </span>
                             </div>
-                           
+                            {formData.wilaya && delivery > 0 && (
+                                <p className="text-xs text-gray-400 text-right">
+                                    {formData.wilaya} rate
+                                </p>
+                            )}
                         </div>
 
                         <div className="border-t border-gray-200 mt-4 pt-4">
@@ -303,12 +291,8 @@ export default function Checkout() {
                                     {finalTotal.toLocaleString()} DA
                                 </span>
                             </div>
-                            {shipping === 0 && (
-                                <p className="text-xs text-green-500 mt-1">🎉 You got free shipping!</p>
-                            )}
                         </div>
 
-                        {/* Benefits */}
                         <div className="mt-6 space-y-3 pt-4 border-t border-gray-100">
                             <div className="flex items-center gap-2 text-sm text-gray-500">
                                 <FaShieldAlt className="text-pink-500" />

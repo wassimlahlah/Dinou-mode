@@ -130,12 +130,6 @@ export default function Cart() {
                                     <span>Subtotal</span>
                                     <span className="font-medium">{cartTotal.toLocaleString()} DA</span>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span>Shipping</span>
-                                    <span className="font-medium">
-                                        {shipping === 0 ? "Free" : `${shipping.toLocaleString()} DA`}
-                                    </span>
-                                </div>
                             </div>
 
                             <div className="border-t border-gray-200 my-4 pt-4">

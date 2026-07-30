@@ -12,7 +12,7 @@ import About from "./pages/About";
 import Categories from "./components/Sections/Categories";
 import Offers from "./pages/Offers";
 import Checkout from "./pages/Checkout";
-
+import DashboardCategories from "./pages/DashboardCategories";
 function App() {
   return (
     <BrowserRouter>
@@ -32,6 +32,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/products" element={<DashboardProducts />} />
         <Route path="/dashboard/orders" element={<DashboardOrders />} />
+        <Route path="/dashboard/categories" element={<DashboardCategories />} />
       </Routes>
     </BrowserRouter>
   );

@@ -6,6 +6,7 @@ export const products = [
     price: 8500,
     oldPrice: 12000,  // ← خصم!
     category: "Dresses",
+    
     image: "https://images.unsplash.com/photo-1566174053879-31528523f8ae",
   },
   {

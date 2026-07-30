@@ -88,8 +88,8 @@ export default function Checkout() {
     if (cart.length === 0 && !submitted) {
         return (
             <div className="p-6 md:p-10 max-w-2xl mx-auto text-center">
-                <p className="text-6xl mb-6">🛒</p>
-                <p className="text-2xl text-gray-400 mb-6">Your cart is empty</p>
+                <p className="text-5xl md:text-6xl mb-6">🛒</p>
+                <p className="text-xl md:text-2xl text-gray-400 mb-6">Your cart is empty</p>
                 <Link to="/shop" className="inline-block bg-black text-white px-8 py-3 rounded-full hover:bg-pink-500 transition">
                     Back to Shop
                 </Link>
@@ -108,17 +108,18 @@ export default function Checkout() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 200 }}
-                    className="w-24 h-24 bg-[#F7D6DF] rounded-full flex items-center justify-center mx-auto mb-6"
+                    className="w-20 h-20 md:w-24 md:h-24 bg-[#F7D6DF] rounded-full flex items-center justify-center mx-auto mb-6"
                 >
-                    <FaCheck className="text-pink-500 text-4xl" />
+                    <FaCheck className="text-pink-500 text-3xl md:text-4xl" />
                 </motion.div>
-                <h2 className="text-3xl font-serif font-bold mb-4">Order Confirmed!</h2>
-                <p className="text-gray-500 mb-2">
+                <h2 className="text-2xl md:text-3xl font-serif font-bold mb-4">Order Confirmed!</h2>
+                <p className="text-gray-500 mb-2 text-sm md:text-base">
                     Thank you <span className="font-semibold text-gray-800">{formData.fullName}</span>,
                 </p>
-                <p className="text-gray-500 mb-8">
+                <p className="text-gray-500 mb-8 text-sm md:text-base">
                     We'll contact you soon at <span className="font-semibold text-gray-800">{formData.phone}</span> to confirm your order.
                 </p>
+                
                 <Link to="/shop" className="inline-block bg-black text-white px-8 py-3 rounded-full hover:bg-pink-500 transition">
                     Continue Shopping
                 </Link>
@@ -127,27 +128,27 @@ export default function Checkout() {
     }
 
     return (
-        <div className="p-6 md:p-10 max-w-7xl mx-auto">
+        <div className="p-4 md:p-10 max-w-7xl mx-auto bg-pink-50 min-h-screen">
             <motion.h1 
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-4xl font-serif font-bold mb-10"
+                className="text-2xl md:text-4xl font-serif font-bold mb-6 md:mb-10"
             >
                 Complete Your Order
             </motion.h1>
 
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-10">
                 
                 <div className="lg:col-span-3">
                     <motion.form 
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         onSubmit={handleSubmit} 
-                        className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100"
+                        className="bg-white rounded-2xl p-5 md:p-8 shadow-sm border border-gray-100"
                     >
-                        <h2 className="text-xl font-bold mb-6">Shipping Information</h2>
+                        <h2 className="text-lg md:text-xl font-bold mb-4 md:mb-6">Shipping Information</h2>
                         
-                        <div className="space-y-5">
+                        <div className="space-y-4 md:space-y-5">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Full Name <span className="text-red-500">*</span>
@@ -216,7 +217,7 @@ export default function Checkout() {
                             type="submit"
                             disabled={loading}
                             className={`
-                                w-full mt-8 py-4 rounded-full font-bold text-lg transition
+                                w-full mt-6 md:mt-8 py-3.5 md:py-4 rounded-full font-bold text-base md:text-lg transition
                                 ${loading 
                                     ? "bg-gray-300 cursor-not-allowed" 
                                     : "bg-black text-white hover:bg-pink-500"
@@ -244,19 +245,19 @@ export default function Checkout() {
                     <motion.div 
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 sticky top-6"
+                        className="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100 lg:sticky lg:top-6"
                     >
-                        <h2 className="text-xl font-bold mb-6 font-serif">Order Summary</h2>
+                        <h2 className="text-lg md:text-xl font-bold mb-4 md:mb-6 font-serif">Order Summary</h2>
                         
-                        <div className="space-y-3 mb-6 max-h-60 overflow-y-auto">
+                        <div className="space-y-3 mb-5 md:mb-6 max-h-48 md:max-h-60 overflow-y-auto">
                             {cart.map((item) => (
                                 <div key={`${item.id}-${item.size}-${item.color}`} className="flex justify-between text-sm">
-                                    <div className="flex-1">
-                                        <span className="text-gray-700 font-medium">{item.name}</span>
-                                        <span className="text-gray-400"> × {item.quantity}</span>
+                                    <div className="flex-1 min-w-0 pr-2">
+                                        <span className="text-gray-700 font-medium truncate block">{item.name}</span>
+                                        <span className="text-gray-400 text-xs">× {item.quantity}</span>
                                         {item.size && <span className="text-gray-400 text-xs"> ({item.size})</span>}
                                     </div>
-                                    <span className="font-medium text-gray-800">
+                                    <span className="font-medium text-gray-800 shrink-0">
                                         {(item.price * item.quantity).toLocaleString()} DA
                                     </span>
                                 </div>
@@ -264,11 +265,11 @@ export default function Checkout() {
                         </div>
 
                         <div className="border-t border-gray-200 pt-4 space-y-3">
-                            <div className="flex justify-between text-gray-600">
+                            <div className="flex justify-between text-gray-600 text-sm md:text-base">
                                 <span>Subtotal</span>
                                 <span>{cartTotal.toLocaleString()} DA</span>
                             </div>
-                            <div className="flex justify-between text-gray-600">
+                            <div className="flex justify-between text-gray-600 text-sm md:text-base">
                                 <span>Delivery</span>
                                 <span>
                                     {delivery === 0 
@@ -286,24 +287,24 @@ export default function Checkout() {
 
                         <div className="border-t border-gray-200 mt-4 pt-4">
                             <div className="flex justify-between items-center">
-                                <span className="text-lg font-bold">Total</span>
-                                <span className="text-2xl font-bold text-pink-500">
+                                <span className="text-base md:text-lg font-bold">Total</span>
+                                <span className="text-xl md:text-2xl font-bold text-pink-500">
                                     {finalTotal.toLocaleString()} DA
                                 </span>
                             </div>
                         </div>
 
-                        <div className="mt-6 space-y-3 pt-4 border-t border-gray-100">
-                            <div className="flex items-center gap-2 text-sm text-gray-500">
-                                <FaShieldAlt className="text-pink-500" />
+                        <div className="mt-5 md:mt-6 space-y-2.5 md:space-y-3 pt-4 border-t border-gray-100">
+                            <div className="flex items-center gap-2 text-xs md:text-sm text-gray-500">
+                                <FaShieldAlt className="text-pink-500 shrink-0" />
                                 <span>Secure Payment</span>
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-500">
-                                <FaTruck className="text-pink-500" />
+                            <div className="flex items-center gap-2 text-xs md:text-sm text-gray-500">
+                                <FaTruck className="text-pink-500 shrink-0" />
                                 <span>Fast Delivery</span>
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-500">
-                                <FaCheck className="text-pink-500" />
+                            <div className="flex items-center gap-2 text-xs md:text-sm text-gray-500">
+                                <FaCheck className="text-pink-500 shrink-0" />
                                 <span>Quality Guarantee</span>
                             </div>
                         </div>

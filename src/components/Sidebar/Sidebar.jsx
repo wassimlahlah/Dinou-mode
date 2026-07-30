@@ -1,28 +1,30 @@
 import {
-    FaHome,
-    FaShoppingBag,
-    FaTshirt,
-    FaFire,
-    FaShoppingCart,
-    FaPhone,
-    FaUserShield,
-    FaInfoCircle,
-    FaBars,
-    FaTimes
+    FaHome, FaShoppingBag, FaTshirt, FaFire,
+    FaShoppingCart, FaPhone, FaUserShield,
+    FaInfoCircle, FaBars, FaTimes
 } from "react-icons/fa";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import SidebarItem from "./SidebarItem";
 
-
-
 export default function Sidebar() {
-
     const [mobileOpen, setMobileOpen] = useState(false);
     const location = useLocation();
-    const currentPath = location.pathname;
 
+    useEffect(() => {
+        setMobileOpen(false);
+    }, [location.pathname]);
+
+    useEffect(() => {
+        if (mobileOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => { document.body.style.overflow = ""; };
+    }, [mobileOpen]);
 
     const items = [
         { title: "Home", icon: <FaHome />, link: "/" },
@@ -33,100 +35,127 @@ export default function Sidebar() {
         { title: "About", icon: <FaInfoCircle />, link: "/about" },
     ];
 
-
-
     return (
         <>
+            {/* ===== MOBILE TOP BAR ===== */}
+            <div className="md:hidden fixed top-0 left-0 right-0 z-[60] bg-[#F7D6DF] shadow-sm">
+                <div className="flex items-center justify-between px-6 h-20">
 
-            {/* ===== MOBILE TOGGLE BUTTON ===== */}
-            <button
-                onClick={() => setMobileOpen(!mobileOpen)}
-                className="md:hidden fixed top-4 left-4 z-50 p-3 bg-[#F7D6DF] rounded-full shadow-lg text-black hover:bg-pink-200 transition-colors"
-            >
-                {mobileOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
-            </button>
-
-
-
-            {/* ===== SIDEBAR ===== */}
-            <aside
-                className={`
-                    fixed md:sticky top-0 left-0 z-40
-                    w-72 bg-[#F7D6DF] min-h-screen h-screen
-                    p-6 flex-col
-                    overflow-y-auto
-                    transition-transform duration-300 ease-in-out
-                    ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-                `}
-            >
-
-
-
-                {/* ===== LUXURY LOGO ===== */}
-                <div className="flex flex-col items-center mb-12 select-none">
-
-                    <Link to="/" className="group cursor-pointer">
-                        <h1 className="text-3xl font-bold font-semibold tracking-[0.10em] text-black">
-                            Dinou<span className="text-pink-500"> Moda</span>
+                     {/* Logo - left */}
+                    <Link to="/" onClick={() => setMobileOpen(false)} className="px-4">
+                         <h1 className="text-2xl font-bold tracking-[0.15em] text-black">
+                            Dinou<span className="text-pink-500">Moda</span>
                         </h1>
                     </Link>
+                    
+                    {/* Menu Button - right */}
+                    <button
+                        onClick={() => setMobileOpen(!mobileOpen)}
+                        className="flex flex-col items-center justify-center w-10 h-10 gap-[5px] group"
+                        aria-label="Toggle menu"
+                    >
+                        <motion.span
+                            animate={mobileOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="block w-6 h-[2px] bg-black group-hover:bg-pink-500 transition-colors"
+                        />
+                        <motion.span
+                            animate={mobileOpen ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
+                            transition={{ duration: 0.2 }}
+                            className="block w-6 h-[2px] bg-black group-hover:bg-pink-500 transition-colors"
+                        />
+                        <motion.span
+                            animate={mobileOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="block w-6 h-[2px] bg-black group-hover:bg-pink-500 transition-colors"
+                        />
+                    </button>
+                </div>
+            </div>
 
+            {/* ===== SIDEBAR (Desktop + Mobile Drawer) ===== */}
+            <aside
+                className={`
+                    fixed md:sticky top-0 left-0 z-50
+                    w-[280px] md:w-72 
+                    bg-[#F7D6DF] min-h-screen h-screen
+                    p-6 flex flex-col
+                    overflow-y-auto
+                    transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+                    ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+                    md:top-0
+                `}
+            >
+                {/* Desktop Logo */}
+                <div className="hidden md:flex flex-col items-center mb-5 select-none pt-2">
+                    <Link to="/" onClick={() => setMobileOpen(false)}>
+                        <h1 className="text-3xl font-bold tracking-[0.15em] text-black">
+                            Dinou<span className="text-pink-500">Moda</span>
+                        </h1>
+                    </Link>
                     <div className="flex items-center gap-3 mt-2">
-                        <div className="w-10 h-[1px] bg-black/60"></div>
-                        <p className="text-[11px] uppercase tracking-[0.5em] text-gray-500 font-medium">
-                            Fashion
+                        <div className="w-8 h-[1px] bg-black/40"></div>
+                        <p className="text-[10px] uppercase tracking-[0.4em] text-gray-500 font-medium">
+                            Luxury Fashion
                         </p>
-                        <div className="w-10 h-[1px] bg-black/60"></div>
+                        <div className="w-8 h-[1px] bg-black/40"></div>
                     </div>
-
                 </div>
 
+                {/* Mobile: Close button + Small logo inside sidebar */}
+                <div className="md:hidden flex items-center justify-between mb-8">
+                    <h1 className="text-lg font-bold tracking-[0.1em] text-black">
+                        Menu
+                    </h1>
+                    <button
+                        onClick={() => setMobileOpen(false)}
+                        className="w-8 h-8 flex items-center justify-center rounded-full bg-black/10 hover:bg-black/20 transition"
+                    >
+                        <FaTimes size={14} />
+                    </button>
+                </div>
 
-
-
-                {/* ===== MENU ===== */}
                 <nav className="flex-1 space-y-1">
-
-                    {items.map((item) => (
-                        <SidebarItem
+                    {items.map((item, i) => (
+                        <motion.div
                             key={item.title}
-                            {...item}
-                            isActive={currentPath === item.link}
-                        />
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.05, duration: 0.3 }}
+                        >
+                            <SidebarItem
+                                {...item}
+                                isActive={location.pathname === item.link}
+                                onClick={() => setMobileOpen(false)}
+                            />
+                        </motion.div>
                     ))}
-
                 </nav>
 
-
-
-
-                {/* ===== ADMIN (en bas) ===== */}
-                <div className="mt-2 pt-6 border-t border-black/10">
+                <div className="mt-auto pt-6 border-t border-black/10">
                     <SidebarItem
                         title="Admin Login"
                         icon={<FaUserShield />}
                         link="/admin"
-                        isActive={currentPath === "/admin"}
+                        isActive={location.pathname === "/admin"}
+                        onClick={() => setMobileOpen(false)}
                     />
                 </div>
-
-
-
             </aside>
 
-
-
             {/* ===== MOBILE OVERLAY ===== */}
-            {mobileOpen && (
-                <div
-                    className="md:hidden fixed inset-0 bg-black/30 z-30 backdrop-blur-sm"
-                    onClick={() => setMobileOpen(false)}
-                />
-            )}
-
-
-
+            <AnimatePresence>
+                {mobileOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="md:hidden fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"
+                        onClick={() => setMobileOpen(false)}
+                    />
+                )}
+            </AnimatePresence>
         </>
     );
-
 }

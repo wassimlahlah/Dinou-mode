@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardSidebar from "../components/Dashboard/DashboardSidebar";
 import { categories as initialCategories } from "../data/categories";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaPlus, FaTrash, FaTimes, FaImage, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaPlus, FaTrash, FaTimes, FaImage } from "react-icons/fa";
 import toast from "react-hot-toast";
 
 export default function DashboardCategories() {
@@ -91,13 +91,13 @@ export default function DashboardCategories() {
     };
 
     return (
-        <div className="flex min-h-screen bg-pink-50 mt-4">
+        <div className="flex min-h-screen bg-pink-50">
             <DashboardSidebar />
             <main className="flex-1 p-4 md:p-6 lg:p-10 overflow-x-hidden">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 md:mb-8">
                     <h1 className="text-2xl md:text-4xl font-serif font-bold">Categories</h1>
                     <button onClick={openAdd}
-                        className="bg-black text-white px-5 md:px-6 py-2.5 md:py-3 rounded-full flex items-center gap-2 hover:bg-pink-200 hover:text-black transition text-sm md:text-base w-full sm:w-auto justify-center">
+                        className="bg-black text-white mt-2 cursor-pointer px-5 md:px-6 py-2.5 md:py-3 rounded-full flex items-center gap-2 hover:bg-pink-200 hover:text-black transition text-sm md:text-base w-full sm:w-auto justify-center">
                         <FaPlus size={14} /> Add Category
                     </button>
                 </div>
@@ -114,7 +114,7 @@ export default function DashboardCategories() {
                         >
                             <div className="relative h-48 bg-gray-100">
                                 {cat?.images?.length > 0 ? (
-                                    <CategoryImageCarousel images={cat.images} />
+                                    <CategoryImageAuto images={cat.images} />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-300">
                                         <FaImage size={40} />
@@ -126,11 +126,11 @@ export default function DashboardCategories() {
                                 <span className="font-semibold text-sm md:text-base">{cat.name}</span>
                                 <div className="flex gap-1">
                                     <button onClick={() => openEdit(cat)}
-                                        className="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition">
+                                        className="p-2 text-gray-400 cursor-pointer hover:text-blue-500 hover:bg-blue-50 rounded-lg transition">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                                     </button>
                                     <button onClick={() => handleDelete(cat.id, cat.name)}
-                                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition">
+                                        className="p-2 text-gray-400 cursor-pointer hover:text-red-500 hover:bg-red-50 rounded-lg transition">
                                         <FaTrash size={14} />
                                     </button>
                                 </div>
@@ -151,7 +151,7 @@ export default function DashboardCategories() {
                         >
                             <div className="relative h-44 bg-gray-100">
                                 {cat?.images?.length > 0 ? (
-                                    <CategoryImageCarousel images={cat.images} />
+                                    <CategoryImageAuto images={cat.images} />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-300">
                                         <FaImage size={32} />
@@ -164,12 +164,12 @@ export default function DashboardCategories() {
                             </div>
                             <div className="px-4 pb-4 flex gap-2">
                                 <button onClick={() => openEdit(cat)}
-                                    className="flex-1 py-2.5 text-blue-500 bg-blue-50 rounded-xl text-sm font-medium flex items-center justify-center gap-1">
+                                    className="flex-1 py-2.5 text-blue-500 cursor-pointer bg-blue-50 rounded-xl text-sm font-medium flex items-center justify-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                                     Edit
                                 </button>
                                 <button onClick={() => handleDelete(cat.id, cat.name)}
-                                    className="flex-1 py-2.5 text-red-500 bg-red-50 rounded-xl text-sm font-medium flex items-center justify-center gap-1">
+                                    className="flex-1 py-2.5 text-red-500 cursor-pointer bg-red-50 rounded-xl text-sm font-medium flex items-center justify-center gap-1">
                                     <FaTrash size={12} /> Delete
                                 </button>
                             </div>
@@ -273,13 +273,17 @@ export default function DashboardCategories() {
         </div>
     );
 }
-
-// Image Carousel Component
-function CategoryImageCarousel({ images }) {
+function CategoryImageAuto({ images }) {
     const [current, setCurrent] = useState(0);
 
-    const next = () => setCurrent((prev) => (prev + 1) % (images?.length || 1));
-    const prev = () => setCurrent((prev) => (prev - 1 + (images?.length || 1)) % (images?.length || 1));
+    // ✅ Auto slideshow toutes les 2 secondes
+    useEffect(() => {
+        if (!images || images.length <= 1) return;
+        const interval = setInterval(() => {
+            setCurrent((prev) => (prev + 1) % images.length);
+        }, 4000);
+        return () => clearInterval(interval);
+    }, [images]);
 
     if (!images || images.length === 0) {
         return (
@@ -295,36 +299,26 @@ function CategoryImageCarousel({ images }) {
 
     return (
         <div className="relative w-full h-full">
-            <AnimatePresence mode="wait">
-                <motion.img
-                    key={current}
-                    src={images[current]}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-full h-full object-cover absolute inset-0"
-                    alt={`Slide ${current + 1}`}
+            {/* ✅ Deux images superposées — pas de blanc entre les transitions */}
+            {images.map((img, i) => (
+                <img
+                    key={i}
+                    src={img}
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+                        i === current ? "opacity-100" : "opacity-0"
+                    }`}
+                    alt={`Slide ${i + 1}`}
                 />
-            </AnimatePresence>
-            
-            <button
-                onClick={prev}
-                className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/80 backdrop-blur rounded-full shadow-sm hover:bg-white transition"
-            >
-                <FaChevronLeft size={10} />
-            </button>
-            <button
-                onClick={next}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/80 backdrop-blur rounded-full shadow-sm hover:bg-white transition"
-            >
-                <FaChevronRight size={10} />
-            </button>
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+            ))}
+
+            {/* Dots indicateurs */}
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                 {images.map((_, i) => (
                     <div
                         key={i}
-                        className={`w-1.5 h-1.5 rounded-full transition ${i === current ? "bg-white" : "bg-white/50"}`}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                            i === current ? "bg-white w-3" : "bg-white/50 w-1.5"
+                        }`}
                     />
                 ))}
             </div>

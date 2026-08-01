@@ -38,7 +38,7 @@ export default function Sidebar() {
     return (
         <>
             {/* ===== MOBILE TOP BAR ===== */}
-            <div className="md:hidden fixed top-0 left-0 right-0 z-[60] bg-[#F7D6DF] shadow-sm">
+            <div className="md:hidden fixed top-0 left-0 right-0 z-[60] bg-[#F7D6DF] shadow-xs">
                 <div className="flex items-center justify-between px-6 h-20">
 
                      {/* Logo - left */}
@@ -49,27 +49,9 @@ export default function Sidebar() {
                     </Link>
                     
                     {/* Menu Button - right */}
-                    <button
-                        onClick={() => setMobileOpen(!mobileOpen)}
-                        className="flex flex-col items-center justify-center w-10 h-10 gap-[5px] group"
-                        aria-label="Toggle menu"
-                    >
-                        <motion.span
-                            animate={mobileOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="block w-6 h-[2px] bg-black group-hover:bg-pink-500 transition-colors"
-                        />
-                        <motion.span
-                            animate={mobileOpen ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
-                            transition={{ duration: 0.2 }}
-                            className="block w-6 h-[2px] bg-black group-hover:bg-pink-500 transition-colors"
-                        />
-                        <motion.span
-                            animate={mobileOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="block w-6 h-[2px] bg-black group-hover:bg-pink-500 transition-colors"
-                        />
-                    </button>
+                     <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2">
+                    {mobileOpen ? <FaTimes /> : <FaBars />}
+                </button>
                 </div>
             </div>
 

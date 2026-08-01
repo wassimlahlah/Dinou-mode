@@ -12,7 +12,7 @@ export default function Dashboard() {
         const savedOrders = JSON.parse(localStorage.getItem('dinou_orders') || '[]');
         setOrders(savedOrders);
         const savedProducts = JSON.parse(localStorage.getItem('dinou_products') || '[]');
-        setProductsCount(savedProducts.length || 12);
+        setProductsCount(savedProducts.length || 8);
     }, []);
 
     const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);

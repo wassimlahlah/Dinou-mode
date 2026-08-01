@@ -178,7 +178,7 @@ export default function DashboardOrders() {
                                 <div className="space-y-3">
                                     {selectedOrder.cart?.map((item, idx) => (
                                         <div key={idx} className="flex gap-3 bg-gray-50 rounded-xl p-3">
-                                            <img src={item.image} alt={item.name} className="w-14 h-14 rounded-lg object-cover shrink-0" />
+                                            <img src={item.colors?.[0]?.image} alt={item.name} className="w-14 h-14 rounded-lg object-cover shrink-0" />
                                             <div className="flex-1 min-w-0">
                                                 <p className="font-semibold text-sm text-gray-900 truncate">{item.name}</p>
                                                 <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-xs text-gray-500">

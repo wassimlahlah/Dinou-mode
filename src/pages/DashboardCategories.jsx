@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import DashboardSidebar from "../components/Dashboard/DashboardSidebar";
 import { categories as initialCategories } from "../data/categories";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaPlus, FaTrash, FaTimes, FaImage } from "react-icons/fa";
+import { FaPlus, FaTrash, FaTimes, FaImage, FaUpload } from "react-icons/fa";
 import toast from "react-hot-toast";
 
 export default function DashboardCategories() {
@@ -14,12 +14,13 @@ export default function DashboardCategories() {
         name: "",
         images: [],
     });
-    const [imageInput, setImageInput] = useState("");
+    
+    // ✅ Ref pour l'input file caché
+    const fileInputRef = useRef(null);
 
     const openAdd = () => {
         setEditingId(null);
         setForm({ name: "", images: [] });
-        setImageInput("");
         setShowModal(true);
     };
 
@@ -29,7 +30,6 @@ export default function DashboardCategories() {
             name: category.name || "",
             images: Array.isArray(category.images) ? [...category.images] : [],
         });
-        setImageInput("");
         setShowModal(true);
     };
 
@@ -74,20 +74,44 @@ export default function DashboardCategories() {
         }
     };
 
-    const addImage = () => {
-        if (!imageInput.trim()) return;
-        const currentImages = Array.isArray(form.images) ? form.images : [];
-        if (currentImages.includes(imageInput.trim())) {
-            toast.error("Image already added");
-            return;
-        }
-        setForm({ ...form, images: [...currentImages, imageInput.trim()] });
-        setImageInput("");
+    // ✅ Upload fichier → base64
+    const handleFileUpload = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+
+        files.forEach((file) => {
+            if (!file.type.startsWith("image/")) {
+                toast.error(`${file.name} is not an image`);
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error(`${file.name} is too large (max 5MB)`);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64 = reader.result;
+                setForm((prev) => {
+                    if (prev.images.includes(base64)) {
+                        toast.error("Image already added");
+                        return prev;
+                    }
+                    return { ...prev, images: [...prev.images, base64] };
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Reset input
+        e.target.value = "";
     };
 
     const removeImage = (imgIndex) => {
-        const currentImages = Array.isArray(form.images) ? form.images : [];
-        setForm({ ...form, images: currentImages.filter((_, i) => i !== imgIndex) });
+        setForm((prev) => ({
+            ...prev,
+            images: prev.images.filter((_, i) => i !== imgIndex),
+        }));
     };
 
     return (
@@ -214,31 +238,30 @@ export default function DashboardCategories() {
                                         className="w-full border p-3.5 sm:p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm sm:text-base"
                                     />
 
-                                    {/* Images Section */}
+                                    {/* ✅ Images Section avec Upload */}
                                     <div className="border rounded-xl p-3 sm:p-4 space-y-3">
                                         <h3 className="font-semibold text-sm flex items-center gap-2">
                                             <FaImage className="text-pink-400" /> Images
                                         </h3>
                                         
-                                        <div className="flex gap-2">
-                                            <div className="relative flex-1">
-                                                <FaImage className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-                                                <input
-                                                    placeholder="Image URL"
-                                                    value={imageInput}
-                                                    onChange={(e) => setImageInput(e.target.value)}
-                                                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addImage())}
-                                                    className="w-full border p-3 pl-9 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm"
-                                                />
-                                            </div>
-                                            <button
-                                                type="button"
-                                                onClick={addImage}
-                                                className="px-4 bg-black text-white rounded-xl hover:bg-pink-200 hover:text-black transition text-sm"
-                                            >
-                                                <FaPlus size={12} />
-                                            </button>
-                                        </div>
+                                        {/* ✅ Bouton Upload */}
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            onChange={handleFileUpload}
+                                            className="hidden"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="w-full border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col items-center gap-2 hover:border-pink-400 hover:bg-pink-50 transition cursor-pointer"
+                                        >
+                                            <FaUpload size={20} className="text-gray-400" />
+                                            <span className="text-sm text-gray-500">Click to upload images</span>
+                                            <span className="text-xs text-gray-400">JPG, PNG, WEBP (max 5MB)</span>
+                                        </button>
 
                                         {(form.images?.length || 0) === 0 && (
                                             <p className="text-xs text-gray-400 text-center py-4">No images added yet</p>
@@ -273,10 +296,11 @@ export default function DashboardCategories() {
         </div>
     );
 }
+
+// ✅ Slideshow auto
 function CategoryImageAuto({ images }) {
     const [current, setCurrent] = useState(0);
 
-    // ✅ Auto slideshow toutes les 2 secondes
     useEffect(() => {
         if (!images || images.length <= 1) return;
         const interval = setInterval(() => {
@@ -299,7 +323,6 @@ function CategoryImageAuto({ images }) {
 
     return (
         <div className="relative w-full h-full">
-            {/* ✅ Deux images superposées — pas de blanc entre les transitions */}
             {images.map((img, i) => (
                 <img
                     key={i}
@@ -311,7 +334,6 @@ function CategoryImageAuto({ images }) {
                 />
             ))}
 
-            {/* Dots indicateurs */}
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                 {images.map((_, i) => (
                     <div
